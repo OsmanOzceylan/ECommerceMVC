@@ -11,11 +11,13 @@ namespace ECommerceMVC.Business.Services.Concrete
         private const string CartSessionKey = "CartSession";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISession _session;
+
         public CartService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _session = _httpContextAccessor.HttpContext.Session;
         }
+
         public List<CartItem> GetCartItems()
         {
             var sessionData = _session.GetString(CartSessionKey);
@@ -24,43 +26,38 @@ namespace ECommerceMVC.Business.Services.Concrete
 
             return JsonConvert.DeserializeObject<List<CartItem>>(sessionData);
         }
+
         public void SaveCartItems(List<CartItem> cartItems)
         {
             var sessionData = JsonConvert.SerializeObject(cartItems);
             _session.SetString(CartSessionKey, sessionData);
         }
+
         public Result<string> AddToCart(int productId, string productName, decimal unitPrice, string? imageUrl)
         {
-            try
-            {
-                var cartItems = GetCartItems();
+            var cartItems = GetCartItems();
+            var existingItem = cartItems.FirstOrDefault(x => x.ProductId == productId);
 
-                var existingItem = cartItems.FirstOrDefault(x => x.ProductId == productId);
-                if (existingItem != null)
-                {
-                    existingItem.Quantity++;
-                    SaveCartItems(cartItems);
-                    return Result<string>.Ok(null, $"{productName} adedi 1 arttırıldı.");
-                }
-                else
-                {
-                    cartItems.Add(new CartItem
-                    {
-                        ProductId = productId,
-                        ProductName = productName,
-                        Quantity = 1,
-                        UnitPrice = unitPrice,
-                        ImageUrl = imageUrl
-                    });
-                    SaveCartItems(cartItems);
-                    return Result<string>.Ok(null, $"{productName} sepete eklendi.");
-                }
-            }
-            catch (Exception ex)
+            if (existingItem != null)
             {
-                return Result<string>.Fail("Sepete eklenirken bir hata oluştu: " + ex.Message);
+                existingItem.Quantity++;
             }
+            else
+            {
+                cartItems.Add(new CartItem
+                {
+                    ProductId = productId,
+                    ProductName = productName,
+                    UnitPrice = unitPrice,
+                    ImageUrl = imageUrl,
+                    Quantity = 1
+                });
+            }
+
+            SaveCartItems(cartItems);
+            return Result<string>.Ok(null, $"{productName} sepete eklendi veya adedi arttırıldı.");
         }
+
         public void IncreaseQuantity(int productId)
         {
             var cartItems = GetCartItems();
@@ -71,24 +68,23 @@ namespace ECommerceMVC.Business.Services.Concrete
                 SaveCartItems(cartItems);
             }
         }
-        public List<CartItem> DecreaseQuantity(List<CartItem> cartItems, int productId)
+
+        public void DecreaseQuantity(int productId)
         {
+            var cartItems = GetCartItems();
             var item = cartItems.FirstOrDefault(x => x.ProductId == productId);
             if (item != null)
             {
                 item.Quantity--;
                 if (item.Quantity <= 0)
                     cartItems.Remove(item);
+                SaveCartItems(cartItems);
             }
-
-            SaveCartItems(cartItems);
-            return cartItems;
         }
-        public List<CartItem> ClearCart()
+
+        public void ClearCart()
         {
-            var emptyList = new List<CartItem>();
-            SaveCartItems(emptyList);
-            return emptyList;
+            SaveCartItems(new List<CartItem>());
         }
     }
 }

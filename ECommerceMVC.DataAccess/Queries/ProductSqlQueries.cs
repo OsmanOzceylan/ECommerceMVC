@@ -3,7 +3,7 @@
     public static class ProductSqlQueries
     {
         public const string GetAllProduct = @"
-            SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl
+            SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, p.UnitsInStock
             FROM Products p
             LEFT JOIN Categories c ON p.CategoryID = c.CategoryID";
 
@@ -24,18 +24,18 @@
             WHERE ProductID = @ProductID";
 
         public const string GetProductsByCategory = @"
-            SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl
+            SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, p.UnitsInStock
             FROM Products p
             LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
             WHERE p.CategoryID = @CategoryID";
 
         public const string GetTop5BestSellingProducts = @"
             SELECT TOP 5 
-                p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, SUM(od.Quantity) AS TotalSold 
+                p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, p.UnitsInStock, SUM(od.Quantity) AS TotalSold 
             FROM Products p
             JOIN Categories c ON p.CategoryID = c.CategoryID
             JOIN [OrderDetails] od ON p.ProductID = od.ProductID
-            GROUP BY p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl
+            GROUP BY p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, p.UnitsInStock
             ORDER BY TotalSold DESC";
 
         public static string GetProductsByCategoryName = @"
@@ -44,6 +44,7 @@
                 p.ProductName, 
                 p.UnitPrice, 
                 p.ImageUrl,
+                p.UnitsInStock,
                 c.CategoryName 
             FROM Products p
             JOIN Categories c ON p.CategoryID = c.CategoryID
@@ -64,13 +65,10 @@
             SELECT ProductID, ProductName, CategoryID, UnitPrice, UnitsInStock, ImageUrl
             FROM Products";
 
-        public static string GetProductById = @"SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl
+        public static string GetProductById = @"
+            SELECT p.ProductID, p.ProductName, c.CategoryName, p.UnitPrice, p.ImageUrl, p.UnitsInStock
             FROM Products p
             INNER JOIN Categories c ON p.CategoryID = c.CategoryID
             WHERE p.ProductID = @ProductID";
-
-
     }
-
 }
-

@@ -1,7 +1,5 @@
 ﻿using ECommerceMVC.Business.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
 namespace ECommerceMVC.Web.Controllers
 {
     public class ProductController : Controller
@@ -15,7 +13,7 @@ namespace ECommerceMVC.Web.Controllers
             _cartService = cartService;
         }
 
-        // Ürün listeleme - tüm hesaplama ve hazırlık service’de
+        // Ürün listeleme 
         public async Task<IActionResult> Index(int? categoryId, string categoryName, int page = 1, int pageSize = 8)
         {
             var customerId = HttpContext.Session.GetInt32("CustomerID");
@@ -23,7 +21,7 @@ namespace ECommerceMVC.Web.Controllers
             return View(model);
         }
 
-        // Ürün detay - tüm veri ve favori durumu service’de
+        // Ürün detay 
         public async Task<IActionResult> Details(int productId)
         {
             var customerId = HttpContext.Session.GetInt32("CustomerID");
@@ -33,8 +31,7 @@ namespace ECommerceMVC.Web.Controllers
             if (model == null) return NotFound();
             return View(model);
         }
-        // Sepete ekleme - iş mantığı service’de
-        [HttpPost]
+        // Sepete ekleme 
         [HttpPost]
         public IActionResult AddToCart(int productId, string productName, decimal unitPrice, string imageUrl)
         {
@@ -47,8 +44,9 @@ namespace ECommerceMVC.Web.Controllers
 
             var referer = Request.Headers["Referer"].ToString();
             return !string.IsNullOrEmpty(referer)
-                ? Redirect(referer)
-                : RedirectToAction("Index", "Product");
+                ? Redirect(referer) //koşul sağlanırsa geldiği sayfaya yönlendirir
+                : RedirectToAction("Index", "Product"); //nullsa anasayfaya yönlendirir
         }
     }
 }
+ 

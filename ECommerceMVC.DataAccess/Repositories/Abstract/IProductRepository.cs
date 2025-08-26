@@ -12,6 +12,6 @@ namespace ECommerceMVC.DataAccess.Repositories.Abstract
         Task<List<Product>> GetProductsByCategoryNameAsync(string categoryName);
         Result<bool> BulkInsertProducts(List<Product> products);
         Task<ProductResponseModel> GetProductByIdAsync(int productId);
-
+        Task UpdateProductStockAsync(int productId, short newStock);
     }
 }

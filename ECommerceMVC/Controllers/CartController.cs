@@ -63,10 +63,10 @@ namespace ECommerceMVC.Web.Controllers
             var loginCheck = CheckLogin();
             if (loginCheck != null) return loginCheck;
 
-            var cartItems = _cartService.GetCartItems();
-            _cartService.DecreaseQuantity(cartItems, productId);
+            _cartService.DecreaseQuantity(productId);
             return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         public IActionResult ClearCart()

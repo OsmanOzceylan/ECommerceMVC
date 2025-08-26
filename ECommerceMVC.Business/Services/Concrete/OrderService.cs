@@ -2,6 +2,7 @@
 using ECommerceMVC.Core.Models.Request;
 using ECommerceMVC.DataAccess.Repositories.Abstract;
 using ECommerceMVC.Entities.Models;
+using FluentValidation;
 
 namespace ECommerceMVC.Business.Services.Concrete
 {
@@ -10,17 +11,21 @@ namespace ECommerceMVC.Business.Services.Concrete
         private readonly IOrderRepository _orderRepository;
         private readonly ICartService _cartService;
         private readonly ICustomerService _customerService;
+        private readonly IProductRepository _productRepository;
 
         public OrderService(
             IOrderRepository orderRepository,
             ICartService cartService,
-            ICustomerService customerService)
+            ICustomerService customerService,
+            IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _cartService = cartService;
             _customerService = customerService;
+            _productRepository = productRepository;
         }
 
+        // Interface uyumlu
         public async Task<CheckoutRequest> GetCheckoutRequestAsync(int? customerId)
         {
             var model = new CheckoutRequest();
@@ -46,6 +51,15 @@ namespace ECommerceMVC.Business.Services.Concrete
 
         public async Task<(bool Success, string Message)> ProcessCheckoutAsync(int? customerId, CheckoutRequest model)
         {
+            var validator = new CheckoutRequestValidator();
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
+                return (false, errors);
+            }
+
             if (!customerId.HasValue)
                 return (false, "Lütfen önce giriş yapın.");
 
@@ -63,6 +77,16 @@ namespace ECommerceMVC.Business.Services.Concrete
 
             foreach (var item in cartItems)
             {
+                // Ürünü al
+                var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+                if (product == null)
+                    return (false, $"Ürün bulunamadı: {item.ProductId}");
+
+                // Burada Quantity artık UnitsInStock değerini tutuyor
+                if (product.Quantity < item.Quantity)
+                    return (false, $"{product.ProductName} için yeterli stok yok!");
+
+                // Sipariş detayını ekle
                 var orderDetail = new OrderDetail
                 {
                     OrderID = orderId,
@@ -71,6 +95,10 @@ namespace ECommerceMVC.Business.Services.Concrete
                     UnitPrice = item.UnitPrice
                 };
                 await _orderRepository.CreateOrderDetailAsync(orderDetail);
+
+                // Stoktan düş
+                var newStock = (short)(product.Quantity - item.Quantity);
+                await _productRepository.UpdateProductStockAsync(product.ProductID, newStock);
             }
 
             var orderInfo = new OrderInfo
@@ -81,7 +109,6 @@ namespace ECommerceMVC.Business.Services.Concrete
                 Email = model.Email,
                 Address = model.Address,
                 City = model.City,
-                District = model.District,
                 PostalCode = model.PostalCode,
                 PhoneNumber = model.PhoneNumber,
             };

@@ -13,7 +13,7 @@
             VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
         public const string CreateOrderInfo = @"
             INSERT INTO OrderInfo 
-            (OrderID, FirstName, LastName, Email, Address, City, District, PostalCode, PhoneNumber, CardNumber, CardHolderName, CVV)
-            VALUES (@OrderID, @FirstName, @LastName, @Email, @Address, @City, @District, @PostalCode, @PhoneNumber, @CardNumber, @CardHolderName, @CVV)";
+            (OrderID, FirstName, LastName, Email, Address, City, PostalCode, PhoneNumber, CardNumber, CardHolderName, CVV)
+            VALUES (@OrderID, @FirstName, @LastName, @Email, @Address, @City, @PostalCode, @PhoneNumber, @CardNumber, @CardHolderName, @CVV)";
     }
 }

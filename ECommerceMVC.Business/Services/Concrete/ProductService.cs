@@ -65,12 +65,7 @@ namespace ECommerceMVC.Business.Services.Concrete
         }
 
         // --- Controller için ViewModel metodları ---
-        public async Task<ProductListViewModel> GetProductListViewModelAsync(
-            int? categoryId,
-            string categoryName,
-            int page,
-            int pageSize,
-            int? customerId)
+        public async Task<ProductListViewModel> GetProductListViewModelAsync(int? categoryId, string categoryName, int page, int pageSize, int? customerId)
         {
             List<ProductResponseModel> products;
 
@@ -82,9 +77,9 @@ namespace ECommerceMVC.Business.Services.Concrete
                 products = await GetAllProductsAsync();
 
             var pagedProducts = products
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+                .Skip((page - 1) * pageSize) //atlatılan ürün sayısı
+                .Take(pageSize) //alınan ürün sayısı
+                .ToList(); // seçilen ürün listesi
 
             var favoriteIds = customerId.HasValue
                 ? _favoriteService.GetFavoriteIdsByCustomer(customerId.Value)
@@ -120,7 +115,7 @@ namespace ECommerceMVC.Business.Services.Concrete
             return product;
         }
 
-        // --- PagedResult eski uyumluluk ---
+    // --- PagedResult eski uyumluluk ---
         public async Task<PagedResult<ProductResponseModel>> GetPagedProductsAsync(int page, int pageSize, int? categoryId = null, string categoryName = null)
         {
             List<ProductResponseModel> products;
@@ -140,8 +135,6 @@ namespace ECommerceMVC.Business.Services.Concrete
                 TotalCount = products.Count
             };
         }
-
-        // --- Mapping helper ---
         private ProductResponseModel MapToResponse(dynamic p)
         {
             return new ProductResponseModel
@@ -151,7 +144,7 @@ namespace ECommerceMVC.Business.Services.Concrete
                 CategoryName = p.CategoryName,
                 UnitPrice = p.UnitPrice,
                 ImageUrl = p.ImageUrl,
-                IsFavorite = false // default
+                IsFavorite = false // default değer ataması 
             };
         }
     }

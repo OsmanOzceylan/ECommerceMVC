@@ -1,5 +1,6 @@
 ﻿using ECommerceMVC.Core.Models.Request;
 using ECommerceMVC.Core.Utilities;
+using System.Collections.Generic;
 
 namespace ECommerceMVC.Business.Services.Abstract
 {
@@ -7,10 +8,9 @@ namespace ECommerceMVC.Business.Services.Abstract
     {
         List<CartItem> GetCartItems();
         void SaveCartItems(List<CartItem> cartItems);
-        Result<string> AddToCart(int productId, string productName, decimal unitPrice, string imageUrl);
-
+        Result<string> AddToCart(int productId, string productName, decimal unitPrice, string? imageUrl);
         void IncreaseQuantity(int productId);
-        List<CartItem> DecreaseQuantity(List<CartItem> cartItems, int productId);
-        List<CartItem> ClearCart();
+        void DecreaseQuantity(int productId);
+        void ClearCart();
     }
 }

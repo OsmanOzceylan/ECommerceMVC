@@ -37,9 +37,8 @@ namespace ECommerceMVC.DataAccess.Repositories.Concrete
                 orderInfo.FirstName,
                 orderInfo.LastName,
                 orderInfo.Email,
-                orderInfo.Address, // artık modelle uyumlu
+                orderInfo.Address, 
                 orderInfo.City,
-                orderInfo.District,
                 orderInfo.PostalCode,
                 orderInfo.PhoneNumber,
                 orderInfo.CardNumber,
