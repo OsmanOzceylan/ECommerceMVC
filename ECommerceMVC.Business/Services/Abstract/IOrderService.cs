@@ -1,4 +1,5 @@
-﻿using ECommerceMVC.Core.Models.Request;
+﻿using ECommence.Core.Models.Response;
+using ECommerceMVC.Core.Models.Request;
 using ECommerceMVC.Entities.Models;
 
 namespace ECommerceMVC.Business.Services.Abstract
@@ -9,6 +10,6 @@ namespace ECommerceMVC.Business.Services.Abstract
         Task<CheckoutRequest> GetCheckoutRequestAsync(int? customerId);
 
         // Sepet ve checkout ile siparişi işle
-        Task<(bool Success, string Message)> ProcessCheckoutAsync(int? customerId, CheckoutRequest checkout);
+        Task<CheckoutResult> ProcessCheckoutAsync(int? customerId, CheckoutRequest model);
     }
 }

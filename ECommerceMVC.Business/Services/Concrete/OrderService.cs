@@ -1,4 +1,5 @@
-﻿using ECommerceMVC.Business.Services.Abstract;
+﻿using ECommence.Core.Models.Response;
+using ECommerceMVC.Business.Services.Abstract;
 using ECommerceMVC.Core.Models.Request;
 using ECommerceMVC.DataAccess.Repositories.Abstract;
 using ECommerceMVC.Entities.Models;
@@ -49,7 +50,7 @@ namespace ECommerceMVC.Business.Services.Concrete
             return model;
         }
 
-        public async Task<(bool Success, string Message)> ProcessCheckoutAsync(int? customerId, CheckoutRequest model)
+        public async Task<CheckoutResult> ProcessCheckoutAsync(int? customerId, CheckoutRequest model)
         {
             var validator = new CheckoutRequestValidator();
             var validationResult = await validator.ValidateAsync(model);
@@ -57,15 +58,15 @@ namespace ECommerceMVC.Business.Services.Concrete
             if (!validationResult.IsValid)
             {
                 var errors = string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage));
-                return (false, errors);
+                return new CheckoutResult { Success = false, Message = errors };
             }
 
             if (!customerId.HasValue)
-                return (false, "Lütfen önce giriş yapın.");
+                return new CheckoutResult { Success = false, Message = "Lütfen önce giriş yapın." };
 
             var cartItems = _cartService.GetCartItems();
             if (cartItems.Count == 0)
-                return (false, "Sepetiniz boş, önce ürün ekleyin.");
+                return new CheckoutResult { Success = false, Message = "Sepetiniz boş, önce ürün ekleyin." };
 
             var order = new Order
             {
@@ -77,16 +78,13 @@ namespace ECommerceMVC.Business.Services.Concrete
 
             foreach (var item in cartItems)
             {
-                // Ürünü al
                 var product = await _productRepository.GetProductByIdAsync(item.ProductId);
                 if (product == null)
-                    return (false, $"Ürün bulunamadı: {item.ProductId}");
+                    return new CheckoutResult { Success = false, Message = $"Ürün bulunamadı: {item.ProductId}" };
 
-                // Burada Quantity artık UnitsInStock değerini tutuyor
                 if (product.Quantity < item.Quantity)
-                    return (false, $"{product.ProductName} için yeterli stok yok!");
+                    return new CheckoutResult { Success = false, Message = $"{product.ProductName} için yeterli stok yok!" };
 
-                // Sipariş detayını ekle
                 var orderDetail = new OrderDetail
                 {
                     OrderID = orderId,
@@ -96,7 +94,6 @@ namespace ECommerceMVC.Business.Services.Concrete
                 };
                 await _orderRepository.CreateOrderDetailAsync(orderDetail);
 
-                // Stoktan düş
                 var newStock = (short)(product.Quantity - item.Quantity);
                 await _productRepository.UpdateProductStockAsync(product.ProductID, newStock);
             }
@@ -116,7 +113,14 @@ namespace ECommerceMVC.Business.Services.Concrete
 
             _cartService.ClearCart();
 
-            return (true, $"Siparişiniz başarıyla oluşturuldu. Sipariş ID: {orderId}");
+            return new CheckoutResult
+            {
+                Success = true,
+                Message = "Siparişiniz başarıyla oluşturuldu.",
+                CustomerEmail = model.Email, // Mail burada alınıyor
+                OrderId = orderId
+            };
         }
+
     }
 }
