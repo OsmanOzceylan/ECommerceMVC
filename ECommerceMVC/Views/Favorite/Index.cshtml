@@ -1,0 +1,47 @@
+﻿@model List<ECommerceMVC.Core.Models.Response.ProductResponseModel>
+
+<h2>Favorilerim</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (!Model.Any())
+{
+    <p>Favori ürün bulunmamaktadır.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card h-100 d-flex flex-column">
+
+                    <!-- Detay linki: resim ve isim -->
+                    <a asp-controller="Product" asp-action="Details" asp-route-productId="@item.ProductID" class="text-decoration-none text-dark">
+                        <img src="@(item.ImageUrl ?? "/images/default.png")" class="card-img-top" style="height:200px; object-fit:cover;">
+                        <h5 class="card-title mt-2">@item.ProductName</h5>
+                    </a>
+
+                    <div class="card-body flex-grow-1">
+                        <p class="card-text">Fiyat: @item.UnitPrice.ToString("C")</p>
+
+                        <!-- Sepete ekle -->
+                        <form asp-action="AddToCart" asp-controller="Product" method="post" class="mt-auto">
+                            <input type="hidden" name="productId" value="@item.ProductID" />
+                            <button type="submit" class="btn btn-success w-100">Sepete Ekle</button>
+                        </form>
+
+                        <!-- Favoriden çıkar -->
+                        <form asp-action="RemoveFromFavorites" asp-controller="Favorite" method="post" class="mt-2">
+                            <input type="hidden" name="productId" value="@item.ProductID" />
+                            <button type="submit" class="btn btn-outline-danger w-100">Favorilerden Sil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

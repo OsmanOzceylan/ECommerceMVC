@@ -1,0 +1,64 @@
+﻿@model ECommerceMVC.Entities.Models.Customer
+
+@{
+    ViewData["Title"] = "Profil Bilgilerim";
+}
+
+<h2>Profil Bilgilerim</h2>
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">@ViewBag.Success</div>
+}
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-controller="CustomerProfile" asp-action="Profile" method="post" class="row g-3">
+    <input type="hidden" asp-for="CustomerID" />
+
+    <div class="mb-3">
+        <label for="CustomerName" class="form-label">Ad</label>
+        <input type="text" class="form-control" name="CustomerName" value="@Model?.CustomerName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="CustomerLastName" class="form-label">Soyad</label>
+        <input type="text" class="form-control" name="CustomerLastName" value="@Model?.CustomerLastName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Email" class="form-label">Email</label>
+        <input type="email" class="form-control" name="Email" value="@Model?.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Address" class="form-label">Adres</label>
+        <input type="text" class="form-control" name="Address" value="@Model?.Address" />
+    </div>
+
+    <div class="mb-3">
+        <label for="City" class="form-label">Şehir</label>
+        <input type="text" class="form-control" name="City" value="@Model?.City" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Country" class="form-label">Ülke</label>
+        <input type="text" class="form-control" name="Country" value="@Model?.Country" />
+    </div>
+
+    <div class="mb-3">
+        <label for="PostalCode" class="form-label">Posta Kodu</label>
+        <input type="text" class="form-control" name="PostalCode" value="@Model?.PostalCode" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Phone" class="form-label">Telefon</label>
+        <input type="text" class="form-control" name="Phone" value="@Model?.Phone" />
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+    </div>
+</form>

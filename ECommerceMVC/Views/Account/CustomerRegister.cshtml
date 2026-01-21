@@ -1,0 +1,79 @@
+﻿@model ECommerceMVC.Core.Models.Request.CustomerRegisterRequest
+
+@{
+    ViewBag.Title = "Customer Register";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Müşteri Kayıt</title>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-box {
+            width: 350px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+            .login-box h2 {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .login-box input[type="text"],
+            .login-box input[type="password"] {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: #f0f5f5;
+            }
+
+            .login-box button {
+                width: 100%;
+                padding: 12px;
+                background-color: #2196F3;
+                border: none;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            .login-box a {
+                display: block;
+                text-align: center;
+                margin-top: 15px;
+                font-size: 0.9em;
+                color: #666;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Müşteri Kayıt</h2>
+        <form method="post" asp-action="CustomerRegister" asp-controller="Account">
+            @Html.AntiForgeryToken()
+            <input asp-for="CustomerName" placeholder="Müşteri Adı" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+
+            <input asp-for="CustomerPassword" type="password" placeholder="Şifre" />
+            <span asp-validation-for="CustomerPassword" class="text-danger"></span>
+
+            <button type="submit">Kayıt Ol</button>
+        </form>
+        <a asp-action="CustomerLogin" asp-controller="Account">Giriş Yap</a>
+    </div>
+</body>
+</html>

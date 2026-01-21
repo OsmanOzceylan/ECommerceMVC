@@ -1,0 +1,72 @@
+﻿@model ECommerceMVC.Core.Models.Request.CheckoutRequest
+
+@{
+    ViewData["Title"] = "Sipariş Onayı";
+}
+
+<h2>Siparişi Onayla</h2>
+<h4>Kullanıcı Bilgileri</h4>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-controller="Order" asp-action="Checkout" method="post">
+    <div class="form-group">
+        <label asp-for="FirstName">Ad</label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LastName">Soyad</label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email">Mail adresiniz</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Address">Adres</label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="City">Şehir</label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Country">Ülke</label>
+        <input asp-for="Country" class="form-control" />
+        <span asp-validation-for="Country" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PostalCode">Posta Kodu</label>
+        <input asp-for="PostalCode" class="form-control" />
+        <span asp-validation-for="PostalCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PhoneNumber">Telefon Numarası</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <h4>Kart Bilgileri</h4>
+    <div class="form-group">
+        <label asp-for="CardNumber">Kart Numarası</label>
+        <input asp-for="CardNumber" class="form-control" />
+        <span asp-validation-for="CardNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CardHolderName">Kart Üzerindeki İsim</label>
+        <input asp-for="CardHolderName" class="form-control" />
+        <span asp-validation-for="CardHolderName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CVV">CVV</label>
+        <input asp-for="CVV" class="form-control" />
+        <span asp-validation-for="CVV" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Siparişi Tamamla</button>
+</form>

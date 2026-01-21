@@ -1,50 +1,82 @@
-﻿@model List<ECommerceMVC.Core.Models.Response.ProductResponse>
+﻿@model ECommerceMVC.Core.Models.ViewModels.ProductListViewModel
 
 @{
     ViewData["Title"] = "Ürünler";
-    var categories = ViewBag.Categories as List<ECommerceMVC.Entities.Models.Category>;
     var selectedCategoryId = ViewContext.HttpContext.Request.Query["categoryId"].ToString();
-    var selectedcategoryName = ViewContext.HttpContext.Request.Query["categoryName"].ToString();
+    var page = Model.CurrentPage;
+    var pageSize = Model.PageSize;
 }
 
 <h2>@ViewData["Title"]</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<!-- Kategori filtreleme -->
 <form method="get" asp-action="Index" asp-controller="Product" class="mb-3">
     <select name="categoryId" class="form-select" onchange="this.form.submit()">
         <option value="">Tüm Kategoriler</option>
-        @foreach (var category in categories)
+        @if (Model.Categories != null)
         {
-            if (category.CategoryID.ToString() == selectedCategoryId)
+            @foreach (var category in Model.Categories)
             {
-                <option value="@category.CategoryID" selected="selected">@category.CategoryName</option>
-            }
-            else
-            {
-                <option value="@category.CategoryID">@category.CategoryName</option>
+                <option value="@category.CategoryID"
+                        selected="@(category.CategoryID.ToString() == selectedCategoryId ? "selected" : null)">
+                    @category.CategoryName
+                </option>
             }
         }
     </select>
 </form>
 
+<div class="row">
+    @foreach (var item in Model.Products)
+    {
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card h-100 d-flex flex-column">
+                <a asp-controller="Product" asp-action="Details" asp-route-productId="@item.ProductID" class="text-decoration-none text-dark">
+                    <img src="@(item.ImageUrl ?? "/images/default.png")" class="card-img-top" style="height:200px; object-fit:cover;">
+                    <h5 class="card-title mt-2">@item.ProductName</h5>
+                </a>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Urun Kodu</th>
-            <th>Ürün Adı</th>
-            <th>Kategori</th>
-            <th>Birim Fiyatı</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+                <div class="card-body flex-grow-1">
+                    <p class="card-text">Kategori: @item.CategoryName</p>
+                    <p class="card-text">Fiyat: @item.UnitPrice.ToString("C")</p>
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <form asp-action="AddToCart" asp-controller="Product" method="post" class="mb-2">
+                        <input type="hidden" name="productId" value="@item.ProductID" />
+                        <input type="hidden" name="productName" value="@item.ProductName" />
+                        <input type="hidden" name="unitPrice" value="@item.UnitPrice" />
+                        <input type="hidden" name="imageUrl" value="@item.ImageUrl" />
+                        <button type="submit" class="btn btn-success w-100">Sepete Ekle</button>
+                    </form>
+
+                    <form asp-action="ToggleFavorite" asp-controller="Favorite" method="post">
+                        <input type="hidden" name="productId" value="@item.ProductID" />
+                        <button type="submit" class="btn @(Model.FavoriteIds.Contains(item.ProductID) ? "btn-warning" : "btn-outline-danger") w-100">
+                            @(Model.FavoriteIds.Contains(item.ProductID) ? "Favoriden Çıkar" : "Favorilere Ekle")
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Sayfa Navigasyonu">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= Model.TotalPages; i++)
         {
-            <tr>
-                <td>@item.ProductID</td>
-                <td>@item.ProductName</td>
-                <td>@item.CategoryName</td>
-                <td>@item.UnitPrice.ToString("C")</td>
-            </tr>
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="?page=@i@(selectedCategoryId != "" ? "&categoryId=" + selectedCategoryId : "")">@i</a>
+            </li>
         }
-    </tbody>
-</table>
+    </ul>
+</nav>

@@ -1,0 +1,110 @@
+﻿@model ECommerceMVC.Core.Models.Request.CustomerLoginRequestModel
+
+@{
+    ViewBag.Title = "Customer Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Customer Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-box {
+            width: 350px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+            .login-box h2 {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .login-box input[type="text"],
+            .login-box input[type="password"] {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: #f0f5f5;
+            }
+
+            .login-box button {
+                width: 100%;
+                padding: 12px;
+                background-color: #2196F3;
+                border: none;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            .login-box a {
+                display: block;
+                text-align: center;
+                margin-top: 15px;
+                font-size: 0.9em;
+                color: #666;
+            }
+
+        .alert-box {
+            width: 350px;
+            margin: 20px auto 0;
+        }
+    </style>
+</head>
+<body>
+
+    @* TempData ile mesaj göstermek *@
+    <div class="alert-box">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <div class="login-box">
+        <h2>Müşteri Girişi</h2>
+
+        <form method="post" asp-action="CustomerLogin" asp-controller="Account">
+            @Html.AntiForgeryToken()
+            <input asp-for="CustomerName" placeholder="Müşteri Adı" />
+            <span asp-validation-for="CustomerName" class="text-danger"></span>
+
+            <input asp-for="CustomerPassword" type="password" placeholder="Şifre" />
+            <span asp-validation-for="CustomerPassword" class="text-danger"></span>
+
+            <button type="submit">Giriş Yap</button>
+
+            <a asp-controller="Account" asp-action="CustomerRegister">Kayıt Ol</a>
+            <a href="#">Şifrenizi mi unuttunuz?</a>
+        </form>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -3,33 +3,121 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ECommerceMVC</title>
+    <title>@ViewData["Title"]  osmanaliozceylan.com</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ECommerceMVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
+    <!-- Hamburger Sidebar -->
+    <div>
+        <button id="hamburgerBtn" class="btn btn-dark" style="position: fixed; top: 15px; left: 15px; z-index:1080;">
+            &#9776;
+        </button>
+
+        <div id="sidebar" style="
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            border-right: 1px solid #ddd;
+            padding-top: 60px;
+            transition: left 0.3s;
+            z-index: 1080;
+        ">
+            <h5 class="px-3">Kategoriler</h5>
+            <ul class="list-unstyled px-2">
+                @if (ViewBag.Categories != null)
+                {
+                    foreach (var category in ViewBag.Categories)
+                    {
+                        <li class="mb-2">
+                            <a class="text-dark text-decoration-none"
+                               href="@Url.Action("Index", "Product", new { categoryId = category.CategoryID })">
+                                @category.CategoryName
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+
+        <div id="overlay" style="
+            display: none;
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.5);
+            z-index:1030;
+        "></div>
+    </div>
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ECommerceMVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" style="margin-left: 50px; " asp-controller="Home" asp-action="Index">OsmanAliOzceylan</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Urunler</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Ürünler</a>
                         </li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item me-3">
+                            <a class="nav-link position-relative" asp-controller="Favorite" asp-action="Index">
+                                <i class="bi bi-heart-fill fs-5 text-dark"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link position-relative" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart-fill fs-5 text-dark"></i>
+                            </a>
+                        </li>
+
+                        @if (string.IsNullOrEmpty(Context.Session.GetString("CustomerName")))
+                        {
+                            <li class="nav-item me-3">
+                                <a class="nav-link position-relative" asp-controller="Account" asp-action="CustomerLogin">
+                                    <i class="bi bi-person-fill fs-5 text-dark"></i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    @Context.Session.GetString("CustomerName")
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="CustomerProfile" asp-action="Profile">Profil Bilgilerim</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Çıkış Yap</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -38,9 +126,26 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - ECommerceMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - Osman Ali Özceylan Koton Projesi 
         </div>
     </footer>
+
+    <script>
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        hamburgerBtn.addEventListener("click", function () {
+            sidebar.style.left = "0px";
+            overlay.style.display = "block";
+        });
+
+        overlay.addEventListener("click", function(){
+            sidebar.style.left = "-250px";
+            overlay.style.display = "none";
+        });
+    </script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

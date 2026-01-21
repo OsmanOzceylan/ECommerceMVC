@@ -4,6 +4,6 @@ namespace ECommerceMVC.Business.Services.Abstract
 {
     public interface ICategoryService
     {
-        List<Category> GetAllCategories();
+        Task<List<Category>> GetAllCategoriesAsync();
     }
 }

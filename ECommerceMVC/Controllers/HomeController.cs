@@ -1,39 +1,22 @@
-﻿using ECommerceMVC.Models;
-using ECommerceMVC.Business.Services.Abstract;
-using ECommerceMVC.Business.Services.Concrete;
-using ECommerceMVC.Entities.Models;
+﻿using ECommerceMVC.Business.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
-namespace silinecek.Controllers
+namespace ECommerceMVC.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IProductService _productService;
+        private readonly IHomeService _homeService;
 
-
-        public HomeController(ILogger<HomeController> logger, IProductService productService)
+        public HomeController(IHomeService homeService)
         {
-            _logger = logger;
-            _productService = productService;
+            _homeService = homeService;
         }
 
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 8)
         {
-            var topProducts = _productService.GetTop5BestSellingProducts();
-            return View(topProducts);
-        }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var customerId = HttpContext.Session.GetInt32("CustomerID"); // sadece session alıyoruz
+            var viewModel = await _homeService.GetHomePageDataAsync(customerId, page, pageSize);
+            return View(viewModel);
         }
     }
 }

@@ -1,33 +1,42 @@
-﻿@model List<ECommerceMVC.Core.Models.Response.ProductResponse>
+﻿@model ECommerceMVC.Core.Models.Response.HomeIndexViewModel
 
-@{
-    ViewData["Title"] = "Ana Sayfa";
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Hoşgeldiniz.</h1>
+<h4>En Çok Satılan 5 Ürün</h4>
+<div class="row mb-4">
+    @foreach (var product in Model.TopSellingProducts)
+    {
+        @await Html.PartialAsync("_ProductCard", product, new ViewDataDictionary(ViewData)
+        {
+            { "FavoriteIds", Model.FavoriteIds }
+        })
+        }
 </div>
 
-<h2 class="mt-4">En Çok Satılan 5 Ürün</h2>
-
-<table class="table table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Ürün Kodu</th>
-            <th>Ürün Adı</th>
-            <th>Kategori</th>
-            <th>Birim Fiyatı</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+<h4>Tüm Ürünler</h4>
+<div class="row">
+    @foreach (var product in Model.AllProducts)
+    {
+        @await Html.PartialAsync("_ProductCard", product, new ViewDataDictionary(ViewData)
         {
-            <tr>
-                <td>@item.ProductID</td>
-                <td>@item.ProductName</td>
-                <td>@item.CategoryName</td>
-                <td>@item.UnitPrice.ToString("C")</td>
-            </tr>
+            { "FavoriteIds", Model.FavoriteIds }
+        })
         }
-    </tbody>
-</table>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Sayfa Navigasyonu">
+    <ul class="pagination justify-content-center">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="?page=@i">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

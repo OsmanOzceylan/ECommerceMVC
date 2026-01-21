@@ -7,19 +7,18 @@ using System.Data.SqlClient;
 
 namespace ECommerceMVC.DataAccess.Repositories.Concrete
 {
-    public class CategoryRepository : ICategoryRepository 
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly string _connectionString;
-
         public CategoryRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");       
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-
-        public List<Category> GetAllCategories()
+        public async Task<List<Category>> GetAllCategoriesAsync()
         {
             using var connection = new SqlConnection(_connectionString);
-            return connection.Query<Category>(CategorySqlQueries.GetAllCategories).ToList();
+            var categories = await connection.QueryAsync<Category>(CategorySqlQueries.GetAllCategories);
+            return categories.ToList();
         }
     }
 }
